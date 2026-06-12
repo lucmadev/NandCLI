@@ -1,0 +1,32 @@
+theme: dark
+
+preferredShell: "bash"
+
+system:
+  autoUpdate: false
+
+tui:
+  showLogo: true
+  animations: true
+  refreshRate: 1000
+
+modules:
+  apt:
+    enabled: true
+
+  docker:
+    enabled: true
+    compose: true
+
+  git:
+    enabled: true
+
+  shells:
+    enabled: true
+
+  stats:
+    enabled: true
+    gpuType: "undefined"
+
+  systemctl:
+    enabled: true
