@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"nandcli/internal/config"
+	"nandcli/internal/tui"
 
+	tea "charm.land/bubbletea/v2"
 )
 
 func main() {
@@ -14,4 +16,9 @@ func main() {
 
 	config.Current = cfg
 
+	p := tea.NewProgram(
+		tui.NewApp(),
+	)
+
+	p.Run()
 }
