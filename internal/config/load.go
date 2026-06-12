@@ -5,7 +5,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Load(path string) (*Config, error) {
+func Load() (*Config, error) {
+	path, err := EnsureConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

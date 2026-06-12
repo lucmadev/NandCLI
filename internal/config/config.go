@@ -1,44 +1,47 @@
 package config
 
-type Config struct {
-	Theme         string `yaml:"theme"`
-	PreferredShell string `yaml:"preferredShell"`
+import (
+	_ "embed"
+	"os"
+	"path/filepath"
+)
 
-	System SystemConfig `yaml:"system"`
-	TUI    TUIConfig    `yaml:"tui"`
+var defaultConfig []byte
 
-	Modules ModulesConfig `yaml:"modules"`
+func ConfigDir() (string, error) {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(dir, "nandcli"), nil
 }
 
-type SystemConfig struct {
-	AutoUpdate bool `yaml:"autoUpdate"`
+func ConfigPath() (string, error) {
+	dir, err := ConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(dir, "config.yaml"), nil
 }
 
-type TUIConfig struct {
-	ShowLogo   bool `yaml:"showLogo"`
-	Animations bool `yaml:"animations"`
-	RefreshRate int `yaml:"refreshRate"`
-}
+func EnsureConfig() (string, error) {
+	path, err := ConfigPath()
+	if err != nil {
+		return "", err
+	}
 
-type ModulesConfig struct {
-	APT       ModuleConfig `yaml:"apt"`
-	Docker    DockerConfig `yaml:"docker"`
-	Git       ModuleConfig `yaml:"git"`
-	Shells    ModuleConfig `yaml:"shells"`
-	Stats     StatsConfig `yaml:"stats"`
-	Systemctl ModuleConfig `yaml:"systemctl"`
-}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
 
-type ModuleConfig struct {
-	Enabled bool `yaml:"enabled"`
-}
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			return "", err
+		}
 
-type DockerConfig struct {
-	Enabled bool `yaml:"enabled"`
-	Compose bool `yaml:"compose"`
-}
+		if err := os.WriteFile(path, defaultConfig, 0644); err != nil {
+			return "", err
+		}
+	}
 
-type StatsConfig struct {
-	Enabled bool `yaml:"enabled"`
-	GpuType string `yaml:"gpuType"`
+	return path, nil
 }
